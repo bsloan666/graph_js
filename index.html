@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<canvas id="myCanvas" width="720" height="720"></canvas>
+<input textarea id="myText" valign="top" rows="15" cols="80" style="width:720px;height:128px"  onkeypress="myDraw()"/>
+
+<script>
+function test_ring(histogram){
+	for( var [node, edgecount] of histogram ){
+		if( edgecount != 2){
+			return false;
+		}	
+	}
+	return true;
+}
+
+function test_chain(histogram){
+	var doubles = 0;
+	var singles = 0;	
+	for( var [node, edgecount] of histogram ){
+		if( edgecount == 2){
+			doubles++;
+		} else if (edgecount == 1) {
+			singles++;
+		}	
+	}
+	if( (singles == 2)  && (doubles == histogram.size-2)){
+ 
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function test_noose(histogram){
+	var triples = 0;
+	var doubles = 0;
+	var singles = 0;	
+	for( var [node, edgecount] of histogram ){
+		if( edgecount == 2){
+			doubles++;
+		} else if (edgecount == 1) {
+			singles++;
+		} else if (edgecount == 3) {
+			triples++;
+		}	
+	}
+	if( (singles == 1) && 
+	    (doubles == histogram.size-2) &&
+	    (triples == 1)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function test_star(histogram){
+	var singles = 0;
+	var penmax = 0;
+	for( var [node, edgecount] of histogram ){
+		if( edgecount == 1){
+			singles++;
+		} else if (edgecount == histogram.size-1){
+			penmax++;
+		}	
+	}
+	if(( penmax == 1) && (singles == histogram.size-1)){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function topology(graph){
+	var nodes = graph[0];
+	var edges = graph[1];
+	var histogram = new Map();
+	var type = "unknown";
+	for( index = 0; index < nodes.length; index++){
+		histogram.set(nodes[index],0);	
+	}
+	for( index = 0; index < edges.length; index++){
+		histogram.set(edges[index][0], histogram.get(edges[index][0])+1);	
+		histogram.set(edges[index][1], histogram.get(edges[index][1])+1);	
+	}
+	if (test_ring(histogram)){
+		type = "ring";
+	}		
+	else if (test_chain(histogram)){
+		type = "chain";
+	}		
+	else if (test_noose(histogram)){
+		type = "noose";
+	}		
+	else if (test_star(histogram)){
+		type = "star";
+	}		
+	return [type, histogram];
+}
+
+function parseGraph(text, mode) {
+	var edgestrs = text.split(' ');
+	var nodes = [];
+	var edges = [];
+	for( index = 0; index < edgestrs.length; index++){
+		edges.push(edgestrs[index].split(','));
+		nodes.push(edges[index][0]);
+		nodes.push(edges[index][1]);			
+	}
+	nodes = new Set(nodes);
+	nodes = Array.from(nodes)
+	return [nodes, edges];
+}
+
+function myDraw() {
+	var cnvs = document.getElementById("myCanvas");
+	var txarea = document.getElementById("myText");
+	var ctx = cnvs.getContext("2d");
+	var graph = parseGraph(txarea.value);
+	var topo = topology(graph);
+	var nodes = graph[0];
+	
+	ctx.fillStyle = "#FFFFFF";
+	ctx.fillRect(0, 0, 720, 720);
+	for( index = 0; index < nodes.length; index++ ){
+		console.log(nodes[index] + " " + topo[1].get(nodes[index]));
+	}
+	ctx.font = "30px Arial";
+	ctx.fillStyle = "#000000";
+	ctx.fillText(topo[0], 360, 360);
+}
+</script>
+</body>
+</html>
