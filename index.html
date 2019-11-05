@@ -75,6 +75,103 @@ function test_star(histogram){
 	}
 }
 
+function test_ringo_star(histogram){
+	var triples = 0;
+	var penmax = 0;
+	for( var [node, edgecount] of histogram ){
+		if( edgecount == 3){
+			triples++;
+		} else if (edgecount == histogram.size-1){
+			penmax++;
+		}	
+	}
+	if(( penmax == 1) && (triples == histogram.size-1)){
+		return true;
+	} else {
+		return false;
+	}
+}
+function test_fully_connected(histogram){
+	var penmax = 0;
+	for( var [node, edgecount] of histogram ){
+		if( edgecount == histogram.size-1){
+			penmax++;
+		}	
+	}
+	if( penmax == histogram.size){
+		return true;
+	}else {
+		return false;
+	}
+}
+
+function test_mesh(histogram){
+	for( var [node, edgecount] of histogram ){
+		if( edgecount < 2 || edgecount > 6){
+			return false;	
+		}	
+	}
+	return true;
+}
+
+function draw_edge(ctx, x1, y1, x2, y2){
+	ctx.moveTo(x1, y1);
+	ctx.lineTo(x2, y2);
+	ctx.stroke();
+}
+function draw_node(ctx, x, y, r, label){
+	ctx.beginPath();
+	ctx.arc(x,y,r, 0, 2 * Math.PI);
+	ctx.stroke();
+	ctx.fillStyle = "#FFFFFF";
+	ctx.fill();
+	ctx.font = "14px Arial";
+	ctx.fillStyle = "#000000";
+	var tdims = ctx.measureText(label);
+	ctx.fillText(label, x-tdims.width/2, y+3);
+}
+
+function star_geometry(graph, histogram, wid, hei){
+	var positions = [];
+	var nodes = graph[0];
+	var edges = graph[1];
+	var center;
+	for( var [node, edgecount] of histogram ){
+		if (edgecount == histogram.size-1){
+			center = nodes.indexOf(node);	
+			console.log(node + " " + center );
+		}	
+	}
+	
+	for( index = 0; index < nodes.length; index++){
+		if( index == center){
+			positions.push([
+				wid/2,
+				hei/2 
+			]);
+		} else {
+			positions.push([
+				Math.sin(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + wid/2,
+				Math.cos(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + hei/2 
+			]);
+		}
+        }
+	return positions;			
+}
+ 
+function ring_geometry(graph, histogram, wid, hei){
+	var positions = [];
+	var nodes = graph[0];
+	var edges = graph[1];
+	for( index = 0; index < nodes.length; index++){
+		positions.push([
+			Math.sin(index * 2 * Math.PI / nodes.length) * wid/4 + wid/2,
+			Math.cos(index * 2 * Math.PI / nodes.length) * wid/4 + hei/2 
+		]);
+        }
+	return positions;			
+}
+ 
 function topology(graph){
 	var nodes = graph[0];
 	var edges = graph[1];
@@ -99,6 +196,15 @@ function topology(graph){
 	else if (test_star(histogram)){
 		type = "star";
 	}		
+	else if (test_ringo_star(histogram)){
+		type = "ringo_star";
+	}		
+	else if (test_fully_connected(histogram)){
+		type = "fully_connected";
+	}		
+	else if (test_mesh(histogram)){
+		type = "mesh";
+	}		
 	return [type, histogram];
 }
 
@@ -117,22 +223,51 @@ function parseGraph(text, mode) {
 }
 
 function myDraw() {
+	var cnv_width = 720;
+	var cnv_height = 720;
 	var cnvs = document.getElementById("myCanvas");
 	var txarea = document.getElementById("myText");
 	var ctx = cnvs.getContext("2d");
 	var graph = parseGraph(txarea.value);
 	var topo = topology(graph);
 	var nodes = graph[0];
+	var edges = graph[1];
 	
 	ctx.fillStyle = "#FFFFFF";
-	ctx.fillRect(0, 0, 720, 720);
+	ctx.fillRect(0, 0, cnv_width, cnv_height);
 	for( index = 0; index < nodes.length; index++ ){
-		console.log(nodes[index] + " " + topo[1].get(nodes[index]));
+		 console.log(nodes[index] + " " + topo[1].get(nodes[index]));
 	}
 	ctx.font = "30px Arial";
 	ctx.fillStyle = "#000000";
-	ctx.fillText(topo[0], 360, 360);
+	var tdims = ctx.measureText(topo[0]);
+	ctx.fillText(topo[0], cnv_width/2-tdims.width/2, cnv_height-30);
+
+	ctx.strokeStyle = "#000000";
+	var geo;
+	if(topo[0] == "ring" || topo[0] == "chain"){
+		geo = ring_geometry(graph, topo[1], cnv_width, cnv_height); 
+	} else if (topo[0] == "star" || topo[0] == "ringo_star") {
+		geo = star_geometry(graph, topo[1], cnv_width, cnv_height); 
+	}
+	for( index = 0; index < edges.length; index++){
+		draw_edge( ctx,
+			geo[nodes.indexOf(edges[index][0])][0],
+			geo[nodes.indexOf(edges[index][0])][1],
+			geo[nodes.indexOf(edges[index][1])][0],
+			geo[nodes.indexOf(edges[index][1])][1]
+		);
+	}
+	for( index = 0; index < nodes.length; index++){
+		draw_node( ctx,
+			geo[index][0], geo[index][1], 
+			20+topo[1].get(nodes[index])*5,
+			nodes[index]
+		);
+
+	}
 }
+
 </script>
 </body>
 </html>
