@@ -114,6 +114,23 @@ function test_mesh(histogram){
 	return true;
 }
 
+function test_tree(histogram){
+	var ones = 0;
+	var mults = 0;
+	for( var [node, edgecount] of histogram ){
+		if( edgecount == 1) {
+			ones++;	
+		} else {
+			mults++;
+		}	
+	}
+	if( ones == mults+1){
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function draw_edge(ctx, x1, y1, x2, y2){
 	ctx.moveTo(x1, y1);
 	ctx.lineTo(x2, y2);
@@ -172,6 +189,81 @@ function ring_geometry(graph, histogram, wid, hei){
 	return positions;			
 }
  
+function tree_geometry(graph, histogram, wid, hei){
+	var positions = [];
+	var nodes = graph[0];
+	var edges = graph[1];
+	var leaves = [];
+	var branches = [];
+	var trunk;
+	for( var [node, edgecount] of histogram ){
+		if (edgecount == 1){
+			leaves.push(node);	
+		} else if(edgecount == 3){
+			branches.push(node);
+		} else if(edgecount == 2) {
+			trunk = node;
+		}	
+	}
+	for( index = 0; index < nodes.length; index++){
+		var lindex = leaves.indexOf(nodes[index]);
+		var bindex = branches.indexOf(nodes[index]);
+		if( lindex > -1){
+			positions.push([
+				Math.sin(leaves.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/4) 
+					* wid/3 + wid/2,
+				Math.cos(leaves.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/4) 
+					* wid/3 + hei/2 
+			]);
+		}
+		else if( bindex > -1){
+			positions.push([
+				Math.sin(branches.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/2) 
+					* wid/6 + wid/2,
+				Math.cos(branches.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/2) 
+					* wid/6 + hei/2 
+			]);
+		}
+		else if( nodes[index] == trunk){
+			positions.push([
+				wid/2,
+				hei/2 
+			]);
+		} else {
+			positions.push([
+				wid/4,
+				hei/4 
+			]);
+		}
+        }
+	return positions;			
+}
+
+function noose_geometry(graph, histogram, wid, hei){
+	var positions = [];
+	var nodes = graph[0];
+	var edges = graph[1];
+	var center;
+	for( var [node, edgecount] of histogram ){
+		if (edgecount == 1){
+			center = nodes.indexOf(node);	
+		}	
+	}
+	for( index = 0; index < nodes.length; index++){
+		if( index == center){
+			positions.push([
+				wid/2,
+				hei/2 
+			]);
+		} else {
+			positions.push([
+				Math.sin(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + wid/2,
+				Math.cos(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + hei/2 
+			]);
+		}
+	}
+	return positions;		
+}	
 function topology(graph){
 	var nodes = graph[0];
 	var edges = graph[1];
@@ -204,6 +296,9 @@ function topology(graph){
 	}		
 	else if (test_mesh(histogram)){
 		type = "mesh";
+	}		
+	else if (test_tree(histogram)){
+		type = "tree";
 	}		
 	return [type, histogram];
 }
@@ -249,6 +344,10 @@ function myDraw() {
 		geo = ring_geometry(graph, topo[1], cnv_width, cnv_height); 
 	} else if (topo[0] == "star" || topo[0] == "ringo_star") {
 		geo = star_geometry(graph, topo[1], cnv_width, cnv_height); 
+	} else if (topo[0] == "noose") {
+		geo = noose_geometry(graph, topo[1], cnv_width, cnv_height); 
+	} else if (topo[0] == "tree") {
+		geo = tree_geometry(graph, topo[1], cnv_width, cnv_height); 
 	}
 	for( index = 0; index < edges.length; index++){
 		draw_edge( ctx,
