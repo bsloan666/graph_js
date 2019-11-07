@@ -1,0 +1,11 @@
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set autoindent
+set smartindent
+set nowrap
+set pastetoggle=<F2>
+set pastetoggle=<F2>
+set ruler
+set rulerformat=%l,%v
+syntax on
