@@ -3,8 +3,8 @@
 <head>
 </head>
 <body>
-<canvas id="myCanvas" width="720" height="720"></canvas>
-<input textarea id="myText" valign="top" rows="15" cols="80" style="width:720px;height:128px"  onkeypress="myDraw()"/>
+<canvas id="myCanvas" width="720" height="720"></canvas><br/>
+<input textarea id="myText" valign="top" rows="3" cols="80" style="width:720px;height:32px"  onkeypress="myDraw()"/>
 
 <script>
 function test_ring(histogram){
@@ -340,7 +340,7 @@ function myDraw() {
 
 	ctx.strokeStyle = "#000000";
 	var geo;
-	if(topo[0] == "ring" || topo[0] == "chain"){
+	if(topo[0] == "ring" || topo[0] == "chain" || topo[0] == "fully_connected" || topo[0] == "mesh"){
 		geo = ring_geometry(graph, topo[1], cnv_width, cnv_height); 
 	} else if (topo[0] == "star" || topo[0] == "ringo_star") {
 		geo = star_geometry(graph, topo[1], cnv_width, cnv_height); 
@@ -348,7 +348,7 @@ function myDraw() {
 		geo = noose_geometry(graph, topo[1], cnv_width, cnv_height); 
 	} else if (topo[0] == "tree") {
 		geo = tree_geometry(graph, topo[1], cnv_width, cnv_height); 
-	}
+    }
 	for( index = 0; index < edges.length; index++){
 		draw_edge( ctx,
 			geo[nodes.indexOf(edges[index][0])][0],
