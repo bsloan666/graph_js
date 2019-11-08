@@ -9,127 +9,127 @@
 <center>
 <script>
 function test_ring(histogram){
-	for( var [node, edgecount] of histogram ){
-		if( edgecount != 2){
-			return false;
-		}	
-	}
-	return true;
+    for( var [node, edgecount] of histogram ){
+        if( edgecount != 2){
+            return false;
+        }    
+    }
+    return true;
 }
 
 function test_chain(histogram){
-	var doubles = 0;
-	var singles = 0;	
-	for( var [node, edgecount] of histogram ){
-		if( edgecount == 2){
-			doubles++;
-		} else if (edgecount == 1) {
-			singles++;
-		}	
-	}
-	if( (singles == 2)  && (doubles == histogram.size-2)){
+    var doubles = 0;
+    var singles = 0;    
+    for( var [node, edgecount] of histogram ){
+        if( edgecount == 2){
+            doubles++;
+        } else if (edgecount == 1) {
+            singles++;
+        }    
+    }
+    if( (singles == 2)  && (doubles == histogram.size-2)){
  
-		return true;
-	}
-	else {
-		return false;
-	}
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 function test_noose(histogram){
-	var triples = 0;
-	var doubles = 0;
-	var singles = 0;	
-	for( var [node, edgecount] of histogram ){
-		if( edgecount == 2){
-			doubles++;
-		} else if (edgecount == 1) {
-			singles++;
-		} else if (edgecount == 3) {
-			triples++;
-		}	
-	}
-	if( (singles == 1) && 
-	    (doubles == histogram.size-2) &&
-	    (triples == 1)) {
-		return true;
-	}
-	else {
-		return false;
-	}
+    var triples = 0;
+    var doubles = 0;
+    var singles = 0;    
+    for( var [node, edgecount] of histogram ){
+        if( edgecount == 2){
+            doubles++;
+        } else if (edgecount == 1) {
+            singles++;
+        } else if (edgecount == 3) {
+            triples++;
+        }    
+    }
+    if( (singles == 1) && 
+        (doubles == histogram.size-2) &&
+        (triples == 1)) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 function test_star(histogram){
-	var singles = 0;
-	var penmax = 0;
-	for( var [node, edgecount] of histogram ){
-		if( edgecount == 1){
-			singles++;
-		} else if (edgecount == histogram.size-1){
-			penmax++;
-		}	
-	}
-	if(( penmax == 1) && (singles == histogram.size-1)){
-		return true;
-	} else {
-		return false;
-	}
+    var singles = 0;
+    var penmax = 0;
+    for( var [node, edgecount] of histogram ){
+        if( edgecount == 1){
+            singles++;
+        } else if (edgecount == histogram.size-1){
+            penmax++;
+        }    
+    }
+    if(( penmax == 1) && (singles == histogram.size-1)){
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function test_ringo_star(histogram){
-	var triples = 0;
-	var penmax = 0;
-	for( var [node, edgecount] of histogram ){
-		if( edgecount == 3){
-			triples++;
-		} else if (edgecount == histogram.size-1){
-			penmax++;
-		}	
-	}
-	if(( penmax == 1) && (triples == histogram.size-1)){
-		return true;
-	} else {
-		return false;
-	}
+    var triples = 0;
+    var penmax = 0;
+    for( var [node, edgecount] of histogram ){
+        if( edgecount == 3){
+            triples++;
+        } else if (edgecount == histogram.size-1){
+            penmax++;
+        }    
+    }
+    if(( penmax == 1) && (triples == histogram.size-1)){
+        return true;
+    } else {
+        return false;
+    }
 }
 function test_fully_connected(histogram){
-	var penmax = 0;
-	for( var [node, edgecount] of histogram ){
-		if( edgecount == histogram.size-1){
-			penmax++;
-		}	
-	}
-	if( penmax == histogram.size){
-		return true;
-	}else {
-		return false;
-	}
+    var penmax = 0;
+    for( var [node, edgecount] of histogram ){
+        if( edgecount == histogram.size-1){
+            penmax++;
+        }    
+    }
+    if( penmax == histogram.size){
+        return true;
+    }else {
+        return false;
+    }
 }
 
 function test_mesh(histogram){
-	for( var [node, edgecount] of histogram ){
-		if( edgecount < 2 || edgecount > 6){
-			return false;	
-		}	
-	}
-	return true;
+    for( var [node, edgecount] of histogram ){
+        if( edgecount < 2 || edgecount > 6){
+            return false;    
+        }    
+    }
+    return true;
 }
 
 function test_tree(histogram){
-	var ones = 0;
-	var mults = 0;
-	for( var [node, edgecount] of histogram ){
-		if( edgecount == 1) {
-			ones++;	
-		} else {
-			mults++;
-		}	
-	}
-	if( ones == mults+1){
-		return true;
-	} else {
-		return false;
-	}
+    var ones = 0;
+    var mults = 0;
+    for( var [node, edgecount] of histogram ){
+        if( edgecount == 1) {
+            ones++;    
+        } else {
+            mults++;
+        }    
+    }
+    if( ones == mults+1){
+        return true;
+    } else {
+        return false;
+    }
 }
 function neighbors(node, edges){
     var nabes = [];
@@ -143,90 +143,118 @@ function neighbors(node, edges){
     return nabes;
 }
 
-function distance(node_a, node_b,  edges, depth=0){
-    nbs = neighbors(node_a, edges);
-    if(nbs.indexOf(node_b) > -1){
-        return depth + 1;
-    } else {
-        for( index = 0; index < nbs.length; index++){
-           return distance(nbs[index], node_b, edges, depth+1); 
+function distance(u, v, edges, nodes)
+{
+    // visited[n] for keeping track of visited
+    // node in BFS
+    var n = nodes.length;
+    var visited = new Array(n);
+
+    // Initialize distances as 0
+    var distance = new Array(n);
+
+    for( index = 0; index < n; index++){
+        visited[index] = 0;
+        distance[index] = 0;
+    } 
+    // queue to do BFS.
+    var Q = [];
+
+    distance[nodes.indexOf(u)] = 0;
+    
+    Q.push(nodes.indexOf(u));
+    visited[nodes.indexOf(u)] = 1;
+    while (Q.length != 0)
+    {
+        x = Q[0];
+        Q.shift();
+        nabes = neighbors(nodes[x], edges); 
+        for (i=0; i<nabes.length; i++)
+        {
+            if (visited[nodes.indexOf(nabes[i])])
+                continue;
+
+            // update distance for i
+            distance[nodes.indexOf(nabes[i])] = distance[nodes.indexOf(x)] + 1;
+            Q.push(nodes.indexOf(nabes[i]));
+            visited[nodes.indexOf(nabes[i])] = 1;
         }
     }
+    return distance[nodes.indexOf(v)];
 }
-    
 
 function draw_edge(ctx, x1, y1, x2, y2){
-	ctx.moveTo(x1, y1);
-	ctx.lineTo(x2, y2);
-	ctx.stroke();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
 }
 function draw_node(ctx, x, y, r, label){
-	ctx.beginPath();
-	ctx.arc(x,y,r, 0, 2 * Math.PI);
-	ctx.stroke();
-	ctx.fillStyle = "#FFFFFF";
-	ctx.fill();
-	ctx.font = "14px Arial";
-	ctx.fillStyle = "#000000";
-	var tdims = ctx.measureText(label);
-	ctx.fillText(label, x-tdims.width/2, y+3);
+    ctx.beginPath();
+    ctx.arc(x,y,r, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fill();
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "#000000";
+    var tdims = ctx.measureText(label);
+    ctx.fillText(label, x-tdims.width/2, y+3);
 }
 
 function star_geometry(graph, histogram, wid, hei){
-	var positions = [];
-	var nodes = graph[0];
-	var edges = graph[1];
-	var center;
-	for( var [node, edgecount] of histogram ){
-		if (edgecount == histogram.size-1){
-			center = nodes.indexOf(node);	
-			console.log(node + " " + center );
-		}	
-	}
-	
-	for( index = 0; index < nodes.length; index++){
-		if( index == center){
-			positions.push([
-				wid/2,
-				hei/2 
-			]);
-		} else {
-			positions.push([
-				Math.sin(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + wid/2,
-				Math.cos(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + hei/2 
-			]);
-		}
+    var positions = [];
+    var nodes = graph[0];
+    var edges = graph[1];
+    var center;
+    for( var [node, edgecount] of histogram ){
+        if (edgecount == histogram.size-1){
+            center = nodes.indexOf(node);    
+            console.log(node + " " + center );
+        }    
+    }
+    
+    for( index = 0; index < nodes.length; index++){
+        if( index == center){
+            positions.push([
+                wid/2,
+                hei/2 
+            ]);
+        } else {
+            positions.push([
+                Math.sin(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + wid/2,
+                Math.cos(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + hei/2 
+            ]);
         }
-	return positions;			
+        }
+    return positions;            
 }
  
 function ring_geometry(graph, histogram, wid, hei){
-	var positions = [];
-	var nodes = graph[0];
-	var edges = graph[1];
-	for( index = 0; index < nodes.length; index++){
-		positions.push([
-			Math.sin(index * 2 * Math.PI / nodes.length) * wid/4 + wid/2,
-			Math.cos(index * 2 * Math.PI / nodes.length) * wid/4 + hei/2 
-		]);
+    var positions = [];
+    var nodes = graph[0];
+    var edges = graph[1];
+    for( index = 0; index < nodes.length; index++){
+        positions.push([
+            Math.sin(index * 2 * Math.PI / nodes.length) * wid/4 + wid/2,
+            Math.cos(index * 2 * Math.PI / nodes.length) * wid/4 + hei/2 
+        ]);
         }
-	return positions;			
+    return positions;            
 }
  
 function grid_geometry(graph, histogram, wid, hei){
-	var positions = [];
-	var nodes = graph[0];
-	var edges = graph[1];
+    var positions = [];
+    var nodes = graph[0];
+    var edges = graph[1];
     var dims = Math.sqrt(nodes.length) + 1;
     var incr = wid/dims * 0.5;
     var xpos = wid/4;
     var ypos = hei/4;
     var rowct = 0;
-	for( index = 0; index < nodes.length; index++){
-		positions.push([
-			xpos, 
-			ypos, 
-		]);
+    for( index = 0; index < nodes.length; index++){
+        positions.push([
+            xpos, 
+            ypos, 
+        ]);
         xpos = xpos + incr;
         if((index % Math.round(dims)) == 0){
             xpos = wid/4;
@@ -236,169 +264,172 @@ function grid_geometry(graph, histogram, wid, hei){
                 xpos= xpos-(incr/2);
             }
         }
-     }
-	return positions;			
+    }
+    return positions;            
 }
  
 function tree_geometry(graph, histogram, wid, hei){
-	var positions = [];
-	var nodes = graph[0];
-	var edges = graph[1];
-	var trunk;
+    var positions = [];
+    var nodes = graph[0];
+    var edges = graph[1];
+    var trunk;
     var offset = 0;
+    var dist = 0;
     for( var [node, edgecount] of histogram ){
         if(edgecount == 2) {
             trunk = node;
         }
     }
-	for( index = 0; index < nodes.length; index++){
-		if( nodes[index] == trunk){
-			positions.push([
-				wid/4,
-				hei/4 
-			]);
-		} else {
-            dist = distance(trunk, nodes[index], edges);
-			positions.push([
-				Math.sin(offset * Math.PI / nodes.length/2) 
-					* wid/6  * dist + wid/4,
-				Math.cos(offset * Math.PI / nodes.length/2) 
-					* wid/6  * dist + hei/4 
-			]);
+    for( index = 0; index < nodes.length; index++){
+        if( nodes[index] == trunk){
+            positions.push([
+                wid/4,
+                hei/4 
+            ]);
+        } else {
+            dist = distance(trunk, nodes[index], edges, nodes);
+            console.log(dist + " ");
+            //dist = dist + 0.5;
+            positions.push([
+                Math.sin(offset * Math.PI / nodes.length/2) 
+                    * wid/6  * dist + wid/4,
+                Math.cos(offset * Math.PI / nodes.length/2) 
+                    * wid/6  * dist + hei/4 
+            ]);
             offset++;
-		}
+        }
     }
-	return positions;			
+    return positions;            
 }
 
 function noose_geometry(graph, histogram, wid, hei){
-	var positions = [];
-	var nodes = graph[0];
-	var edges = graph[1];
-	var center;
-	for( var [node, edgecount] of histogram ){
-		if (edgecount == 1){
-			center = nodes.indexOf(node);	
-		}	
-	}
-	for( index = 0; index < nodes.length; index++){
-		if( index == center){
-			positions.push([
-				wid/2,
-				hei/2 
-			]);
-		} else {
-			positions.push([
-				Math.sin(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + wid/2,
-				Math.cos(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + hei/2 
-			]);
-		}
-	}
-	return positions;		
-}	
+    var positions = [];
+    var nodes = graph[0];
+    var edges = graph[1];
+    var center;
+    for( var [node, edgecount] of histogram ){
+        if (edgecount == 1){
+            center = nodes.indexOf(node);    
+        }    
+    }
+    for( index = 0; index < nodes.length; index++){
+        if( index == center){
+            positions.push([
+                wid/2,
+                hei/2 
+            ]);
+        } else {
+            positions.push([
+                Math.sin(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + wid/2,
+                Math.cos(index * 2 * Math.PI / (nodes.length-1)) * wid/4 + hei/2 
+            ]);
+        }
+    }
+    return positions;        
+}    
 function topology(graph){
-	var nodes = graph[0];
-	var edges = graph[1];
-	var histogram = new Map();
-	var type = "unknown";
-	for( index = 0; index < nodes.length; index++){
-		histogram.set(nodes[index],0);	
-	}
-	for( index = 0; index < edges.length; index++){
-		histogram.set(edges[index][0], histogram.get(edges[index][0])+1);	
-		histogram.set(edges[index][1], histogram.get(edges[index][1])+1);	
-	}
-	if (test_ring(histogram)){
-		type = "ring";
-	}		
-	else if (test_chain(histogram)){
-		type = "chain";
-	}		
-	else if (test_noose(histogram)){
-		type = "noose";
-	}		
-	else if (test_star(histogram)){
-		type = "star";
-	}		
-	else if (test_ringo_star(histogram)){
-		type = "ringo_star";
-	}		
-	else if (test_fully_connected(histogram)){
-		type = "fully_connected";
-	}		
-	else if (test_mesh(histogram)){
-		type = "mesh";
-	}		
-	else if (test_tree(histogram)){
-		type = "tree";
-	}		
-	return [type, histogram];
+    var nodes = graph[0];
+    var edges = graph[1];
+    var histogram = new Map();
+    var type = "unknown";
+    for( index = 0; index < nodes.length; index++){
+        histogram.set(nodes[index],0);    
+    }
+    for( index = 0; index < edges.length; index++){
+        histogram.set(edges[index][0], histogram.get(edges[index][0])+1);    
+        histogram.set(edges[index][1], histogram.get(edges[index][1])+1);    
+    }
+    if (test_ring(histogram)){
+        type = "ring";
+    }        
+    else if (test_chain(histogram)){
+        type = "chain";
+    }        
+    else if (test_noose(histogram)){
+        type = "noose";
+    }        
+    else if (test_star(histogram)){
+        type = "star";
+    }        
+    else if (test_ringo_star(histogram)){
+        type = "ringo_star";
+    }        
+    else if (test_fully_connected(histogram)){
+        type = "fully_connected";
+    }        
+    else if (test_mesh(histogram)){
+        type = "mesh";
+    }        
+    else if (test_tree(histogram)){
+        type = "tree";
+    }        
+    return [type, histogram];
 }
 
 function parseGraph(text, mode) {
-	var edgestrs = text.split(' ');
-	var nodes = [];
-	var edges = [];
-	for( index = 0; index < edgestrs.length; index++){
-		edges.push(edgestrs[index].split(','));
-		nodes.push(edges[index][0]);
-		nodes.push(edges[index][1]);			
-	}
-	nodes = new Set(nodes);
-	nodes = Array.from(nodes)
-	return [nodes, edges];
+    var edgestrs = text.split(' ');
+    var nodes = [];
+    var edges = [];
+    for( index = 0; index < edgestrs.length; index++){
+        edges.push(edgestrs[index].split(','));
+        nodes.push(edges[index][0]);
+        nodes.push(edges[index][1]);            
+    }
+    nodes = new Set(nodes);
+    nodes = Array.from(nodes)
+    return [nodes, edges];
 }
 
 function myDraw() {
-	var cnv_width = 720;
-	var cnv_height = 720;
-	var cnvs = document.getElementById("myCanvas");
-	var txarea = document.getElementById("myText");
-	var ctx = cnvs.getContext("2d");
-	var graph = parseGraph(txarea.value);
-	var topo = topology(graph);
-	var nodes = graph[0];
-	var edges = graph[1];
-	
-	ctx.fillStyle = "#FFFFFF";
-	ctx.fillRect(0, 0, cnv_width, cnv_height);
-	for( index = 0; index < nodes.length; index++ ){
-		 console.log(nodes[index] + " " + topo[1].get(nodes[index]));
-	}
-	ctx.font = "30px Arial";
-	ctx.fillStyle = "#000000";
-	var tdims = ctx.measureText(topo[0]);
-	ctx.fillText(topo[0], cnv_width/2-tdims.width/2, cnv_height-30);
+    var cnv_width = 720;
+    var cnv_height = 720;
+    var cnvs = document.getElementById("myCanvas");
+    var txarea = document.getElementById("myText");
+    var ctx = cnvs.getContext("2d");
+    var graph = parseGraph(txarea.value);
+    var topo = topology(graph);
+    var nodes = graph[0];
+    var edges = graph[1];
+    
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, cnv_width, cnv_height);
+    //for( index = 0; index < nodes.length; index++ ){
+    //     console.log(nodes[index] + " " + topo[1].get(nodes[index]));
+    //}
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "#000000";
+    var tdims = ctx.measureText(topo[0]);
+    ctx.fillText(topo[0], cnv_width/2-tdims.width/2, cnv_height-30);
 
-	ctx.strokeStyle = "#000000";
-	var geo;
-	if(topo[0] == "ring" || topo[0] == "chain" || topo[0] == "fully_connected" || topo[0] == "mesh"){
-		geo = ring_geometry(graph, topo[1], cnv_width, cnv_height); 
-	} else if (topo[0] == "star" || topo[0] == "ringo_star") {
-		geo = star_geometry(graph, topo[1], cnv_width, cnv_height); 
-	} else if (topo[0] == "noose") {
-		geo = noose_geometry(graph, topo[1], cnv_width, cnv_height); 
-	} else if (topo[0] == "tree") {
-		geo = tree_geometry(graph, topo[1], cnv_width, cnv_height); 
-	} else {
-		geo = grid_geometry(graph, topo[1], cnv_width, cnv_height); 
+    ctx.strokeStyle = "#000000";
+    var geo;
+    if(topo[0] == "ring" || topo[0] == "chain" || topo[0] == "fully_connected" || topo[0] == "mesh"){
+        geo = ring_geometry(graph, topo[1], cnv_width, cnv_height); 
+    } else if (topo[0] == "star" || topo[0] == "ringo_star") {
+        geo = star_geometry(graph, topo[1], cnv_width, cnv_height); 
+    } else if (topo[0] == "noose") {
+        geo = noose_geometry(graph, topo[1], cnv_width, cnv_height); 
+    } else if (topo[0] == "tree") {
+        geo = tree_geometry(graph, topo[1], cnv_width, cnv_height); 
+    } else {
+        geo = grid_geometry(graph, topo[1], cnv_width, cnv_height); 
     }
-	for( index = 0; index < edges.length; index++){
-		draw_edge( ctx,
-			geo[nodes.indexOf(edges[index][0])][0],
-			geo[nodes.indexOf(edges[index][0])][1],
-			geo[nodes.indexOf(edges[index][1])][0],
-			geo[nodes.indexOf(edges[index][1])][1]
-		);
-	}
-	for( index = 0; index < nodes.length; index++){
-		draw_node( ctx,
-			geo[index][0], geo[index][1], 
-			20+topo[1].get(nodes[index])*5,
-			nodes[index]
-		);
+    for( index = 0; index < edges.length; index++){
+        draw_edge( ctx,
+            geo[nodes.indexOf(edges[index][0])][0],
+            geo[nodes.indexOf(edges[index][0])][1],
+            geo[nodes.indexOf(edges[index][1])][0],
+            geo[nodes.indexOf(edges[index][1])][1]
+        );
+    }
+    for( index = 0; index < nodes.length; index++){
+        draw_node( ctx,
+            geo[index][0], geo[index][1], 
+            20+topo[1].get(nodes[index])*5,
+            nodes[index]
+        );
 
-	}
+    }
 }
 
 </script>
