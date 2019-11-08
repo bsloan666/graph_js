@@ -131,6 +131,29 @@ function test_tree(histogram){
 		return false;
 	}
 }
+function neighbors(node, edges){
+    var nabes = [];
+    for( index = 0; index < edges.length; index++){
+        if(edges[index][0] == node){
+            nabes.push(edges[index][1]);
+        } else if(edges[index][1] == node) { 
+            nabes.push(edges[index][0]);
+        }
+    }
+    return nabes;
+}
+
+function distance(node_a, node_b,  edges, depth=0){
+    nbs = neighbors(node_a, edges);
+    if(nbs.indexOf(node_b) > -1){
+        return depth + 1;
+    } else {
+        for( index = 0; index < nbs.length; index++){
+           return distance(nbs[index], node_b, edges, depth+1); 
+        }
+    }
+}
+    
 
 function draw_edge(ctx, x1, y1, x2, y2){
 	ctx.moveTo(x1, y1);
@@ -190,53 +213,61 @@ function ring_geometry(graph, histogram, wid, hei){
 	return positions;			
 }
  
+function grid_geometry(graph, histogram, wid, hei){
+	var positions = [];
+	var nodes = graph[0];
+	var edges = graph[1];
+    var dims = Math.sqrt(nodes.length) + 1;
+    var incr = wid/dims * 0.5;
+    var xpos = wid/4;
+    var ypos = hei/4;
+    var rowct = 0;
+	for( index = 0; index < nodes.length; index++){
+		positions.push([
+			xpos, 
+			ypos, 
+		]);
+        xpos = xpos + incr;
+        if((index % Math.round(dims)) == 0){
+            xpos = wid/4;
+            ypos = ypos + incr;
+            rowct = rowct + 1;
+            if(rowct % 2){
+                xpos= xpos-(incr/2);
+            }
+        }
+     }
+	return positions;			
+}
+ 
 function tree_geometry(graph, histogram, wid, hei){
 	var positions = [];
 	var nodes = graph[0];
 	var edges = graph[1];
-	var leaves = [];
-	var branches = [];
 	var trunk;
-	for( var [node, edgecount] of histogram ){
-		if (edgecount == 1){
-			leaves.push(node);	
-		} else if(edgecount == 3){
-			branches.push(node);
-		} else if(edgecount == 2) {
-			trunk = node;
-		}	
-	}
+    var offset = 0;
+    for( var [node, edgecount] of histogram ){
+        if(edgecount == 2) {
+            trunk = node;
+        }
+    }
 	for( index = 0; index < nodes.length; index++){
-		var lindex = leaves.indexOf(nodes[index]);
-		var bindex = branches.indexOf(nodes[index]);
-		if( lindex > -1){
-			positions.push([
-				Math.sin(leaves.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/4) 
-					* wid/3 + wid/2,
-				Math.cos(leaves.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/4) 
-					* wid/3 + hei/2 
-			]);
-		}
-		else if( bindex > -1){
-			positions.push([
-				Math.sin(branches.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/2) 
-					* wid/6 + wid/2,
-				Math.cos(branches.indexOf(nodes[index]) * 2 * Math.PI / leaves.length/2) 
-					* wid/6 + hei/2 
-			]);
-		}
-		else if( nodes[index] == trunk){
-			positions.push([
-				wid/2,
-				hei/2 
-			]);
-		} else {
+		if( nodes[index] == trunk){
 			positions.push([
 				wid/4,
 				hei/4 
 			]);
+		} else {
+            dist = distance(trunk, nodes[index], edges);
+			positions.push([
+				Math.sin(offset * Math.PI / nodes.length/2) 
+					* wid/6  * dist + wid/4,
+				Math.cos(offset * Math.PI / nodes.length/2) 
+					* wid/6  * dist + hei/4 
+			]);
+            offset++;
 		}
-        }
+    }
 	return positions;			
 }
 
@@ -349,6 +380,8 @@ function myDraw() {
 		geo = noose_geometry(graph, topo[1], cnv_width, cnv_height); 
 	} else if (topo[0] == "tree") {
 		geo = tree_geometry(graph, topo[1], cnv_width, cnv_height); 
+	} else {
+		geo = grid_geometry(graph, topo[1], cnv_width, cnv_height); 
     }
 	for( index = 0; index < edges.length; index++){
 		draw_edge( ctx,
