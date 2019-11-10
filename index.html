@@ -133,6 +133,7 @@ function test_tree(histogram){
 }
 function neighbors(node, edges){
     var nabes = [];
+    var index;
     for( index = 0; index < edges.length; index++){
         if(edges[index][0] == node){
             nabes.push(edges[index][1]);
@@ -151,49 +152,64 @@ function distance(u, v, edges, nodes)
     var visited = new Array(n);
 
     // Initialize distances as 0
-    var distance = new Array(n);
+    var dist = new Array(n);
 
-    for( index = 0; index < n; index++){
-        visited[index] = 0;
-        distance[index] = 0;
+    var i;
+
+    for( i = 0; i < n; i++){
+        visited[i] = 0;
+        dist[i] = 0;
     } 
     // queue to do BFS.
-    var Q = [];
+    var queue = [];
 
-    distance[nodes.indexOf(u)] = 0;
+    dist[nodes.indexOf(u)] = 0;
     
-    Q.push(nodes.indexOf(u));
+    queue.push(nodes.indexOf(u));
     visited[nodes.indexOf(u)] = 1;
-    while (Q.length != 0)
+    while (queue.length != 0)
     {
-        x = Q[0];
-        Q.shift();
+        var x = queue[0];
+        queue.shift();
         nabes = neighbors(nodes[x], edges); 
         for (i=0; i<nabes.length; i++)
         {
-            if (visited[nodes.indexOf(nabes[i])])
+            if (visited[nodes.indexOf(nabes[i])]==1)
                 continue;
 
-            // update distance for i
-            distance[nodes.indexOf(nabes[i])] = distance[nodes.indexOf(x)] + 1;
-            Q.push(nodes.indexOf(nabes[i]));
+            // update dist for i
+            dist[nodes.indexOf(nabes[i])] = dist[x] + 1;
+            queue.push(nodes.indexOf(nabes[i]));
             visited[nodes.indexOf(nabes[i])] = 1;
         }
     }
-    return distance[nodes.indexOf(v)];
+    //console.log(dist);
+    return dist[nodes.indexOf(v)];
 }
 
 function draw_edge(ctx, x1, y1, x2, y2){
+    ctx.strokeStyle = "#000000";
+    ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
 }
 function draw_node(ctx, x, y, r, label){
+    var i;
+    var thick = 20;
+    var fat = r + thick;
+    var grd = ctx.createRadialGradient(x, y, r, x, y, r+thick);
+    grd.addColorStop(0, "gray");
+    grd.addColorStop(1, "transparent");
+    ctx.fillStyle = grd;
+    ctx.fillRect(x-fat, y-fat, x+fat, y+fat);
+
     ctx.beginPath();
-    ctx.arc(x,y,r, 0, 2 * Math.PI);
-    ctx.stroke();
     ctx.fillStyle = "#FFFFFF";
+    ctx.arc(x,y,r, 0, 2 * Math.PI);
     ctx.fill();
+
+    ctx.strokeStyle = "#000000";
     ctx.font = "14px Arial";
     ctx.fillStyle = "#000000";
     var tdims = ctx.measureText(label);
@@ -208,7 +224,6 @@ function star_geometry(graph, histogram, wid, hei){
     for( var [node, edgecount] of histogram ){
         if (edgecount == histogram.size-1){
             center = nodes.indexOf(node);    
-            console.log(node + " " + center );
         }    
     }
     
@@ -273,7 +288,8 @@ function tree_geometry(graph, histogram, wid, hei){
     var nodes = graph[0];
     var edges = graph[1];
     var trunk;
-    var offset = 0;
+    var offsets = new Array(nodes.length);
+    var index;
     var dist = 0;
     for( var [node, edgecount] of histogram ){
         if(edgecount == 2) {
@@ -281,22 +297,22 @@ function tree_geometry(graph, histogram, wid, hei){
         }
     }
     for( index = 0; index < nodes.length; index++){
+        offsets[index] = 0;
+    }
+
+    for( index = 0; index < nodes.length; index++){
         if( nodes[index] == trunk){
             positions.push([
-                wid/4,
-                hei/4 
+                wid/6,
+                hei/6 
             ]);
         } else {
             dist = distance(trunk, nodes[index], edges, nodes);
-            console.log(dist + " ");
-            //dist = dist + 0.5;
             positions.push([
-                Math.sin(offset * Math.PI / nodes.length/2) 
-                    * wid/6  * dist + wid/4,
-                Math.cos(offset * Math.PI / nodes.length/2) 
-                    * wid/6  * dist + hei/4 
+                wid/6 + offsets[dist] * 200/(dist), 
+                hei/6 + dist * 140     
             ]);
-            offset++;
+            offsets[dist]++;
         }
     }
     return positions;            
