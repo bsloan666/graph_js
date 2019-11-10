@@ -1,1 +1,0 @@
-cat,frog frog,man man,horse horse,fly fly,lizard lizard,cat
