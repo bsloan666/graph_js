@@ -145,7 +145,7 @@ function test_tree(histogram){
             mults++;
         }    
     }
-    if( ones <  mults && ones >= mults-3){
+    if( ones <  mults+3 && ones >= mults-3){
         return true;
     } else {
         return false;
@@ -331,13 +331,13 @@ function tree_geometry(graph, histogram, wid, hei){
     for( index = 0; index < nodes.length; index++){
         if( nodes[index] == trunk){
             positions.push([
-                wid/6,
+                wid/10,
                 hei/6 
             ]);
         } else {
             dist = distance(trunk, nodes[index], edges, nodes);
             positions.push([
-                wid/6 + offsets[dist] * 200/(dist), 
+                wid/10 + offsets[dist] * 200/(dist), 
                 hei/6 + dist * 140     
             ]);
             offsets[dist]++;
