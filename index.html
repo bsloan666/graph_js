@@ -216,8 +216,17 @@ function draw_edge(ctx, x1, y1, x2, y2){
 function draw_node(ctx, x, y, r, label){
     var i;
     var thick = 20;
+    ctx.strokeStyle = "#000000";
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "#000000";
+    var tdims = ctx.measureText(label);
+    var minwidth = tdims.width/2+5;
+    if( r < minwidth) {
+        r = minwidth;
+    }
     var fat = r + thick;
     var grd = ctx.createRadialGradient(x, y, r, x, y, r+thick);
+
     grd.addColorStop(0, "gray");
     grd.addColorStop(1, "transparent");
     ctx.fillStyle = grd;
@@ -231,7 +240,6 @@ function draw_node(ctx, x, y, r, label){
     ctx.strokeStyle = "#000000";
     ctx.font = "14px Arial";
     ctx.fillStyle = "#000000";
-    var tdims = ctx.measureText(label);
     ctx.fillText(label, x-tdims.width/2, y+3);
 }
 
